@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Çekiliş</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <style>
+        html {
+            font-size: 20px;
+        }
+
+        body {
+            font-family: 'Ubuntu', sans-serif;
+            background-color: rgb(216, 188, 241);
+        }
+
+        input,
+        button {
+            font-family: 'Ubuntu', sans-serif;
+            font-size: 20px;
+            padding: .1rem .3rem;
+        }
+
+        .cekilis {
+            max-width: 400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        ul {
+            list-style: none;
+            width: 100%;
+            padding-left: 0;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            padding: .3rem;
+        }
+
+        li:nth-child(odd) {
+            background-color: rgb(182, 132, 238);
+        }
+
+        li:nth-child(even) {
+            background-color: rgb(145, 93, 230);
+        }
+
+        li>span {
+            margin-right: auto;
+        }
+
+        li.talihli {
+            outline: 5px solid goldenrod;
+        }
+
+        li.talihli>span::after {
+            content: "";
+            display: inline-block;
+            width: .9rem;
+            height: .9rem;
+            background: url("king.png");
+            background-size: cover;
+            margin-left: .5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cekilis">
+        <h1>Çekiliş</h1>
+        <div>
+            <input id="ad" type="text" placeholder="Ad">
+            <button onclick="ekle()" id="btnEkle">Ekle</button>
+        </div>
+        <ul id="kisiler"></ul>
+        <button id="btnCekilis">Çekiliş Yap</button>
+    </div>
+
+
+    <script>
+        let kisiler = ["ali", "can", "cem"];
+        let talihliIndeks = -1;
+        const btnCekilis = document.getElementById("btnCekilis");
+
+        //Görev1: kisiler dizisinin ögelerini ul içinde listele
+        let ul = document.getElementById("kisiler");
+        function listele() {
+            kaydet();
+            ul.innerHTML = "";
+            for (const i in kisiler) {
+                ul.innerHTML += `
+                    <li ondblclick="duzenle(${i})" class="${i == talihliIndeks ? "talihli" : "talihsiz"}">
+                     <span>${kisiler[i]}</span>
+                     <button onclick="sil(${i})">&times;</button>
+                     </li>`;
+            }
+        }
+
+        //Görev3: indeksteki kişiyi sil ve listele
+        function sil(indeks) {
+            talihliIndeks = -1;
+            kisiler.splice(indeks, 1);
+            listele();
+        }
+
+        //Görev2: Ekle butonuna basınca diziye metin kutusundaki adı ekle ve ul listesini güncelle.
+        let ad = document.getElementById("ad");
+        function ekle() {
+            if (ad.value == "") {
+                alert("Önce bir ad girmelisiniz.")
+                return;
+            }
+            talihliIndeks = -1;
+            kisiler.push(ad.value);
+            listele();
+            ad.value = "";
+        }
+
+        //Gorev4: Metin kutusunda ENTER tuşuna basınca da ekle.
+        ad.onkeydown = function (event) {
+            if (event.which == 13)
+                ekle();
+        }
+
+        //Görev5: Çekiliş yap ve listele
+        btnCekilis.addEventListener("click", function () {
+            talihliIndeks = rastgele(0, kisiler.length);
+            listele();
+        });
+
+        //Görev6: Her listelemede verileri kaydet
+        function kaydet() {
+            localStorage["veri"] = JSON.stringify(kisiler);
+        }
+
+        //Görev7: Sayfa açılırken verileri oku
+        function oku() {
+            if (localStorage["veri"]) {
+                kisiler = JSON.parse(localStorage["veri"]);
+            }
+        }
+
+        //Görev8: Kişi düzenle
+        function duzenle(indeks) {
+            let yeni = prompt("Ad:", kisiler[indeks]);
+            if (yeni) {
+                kisiler[indeks] = yeni;
+                listele();
+            }
+        }
+
+
+        //min-maks aralığında rastgele sayı üretir
+        //maks bu aralığa dahil değildir
+        function rastgele(min, maks) {
+            const adet = maks - min;
+            return Math.floor(Math.random() * adet + min);
+        }
+
+        oku();
+        listele();
+
+
+    </script>
+</body>
+
+</html>
